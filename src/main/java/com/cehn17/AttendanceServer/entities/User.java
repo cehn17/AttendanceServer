@@ -1,5 +1,6 @@
 package com.cehn17.AttendanceServer.entities;
 
+import com.cehn17.AttendanceServer.enums.UserRole;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,4 +20,7 @@ public class User {
     private String password;
 
     private String name;
+
+    private UserRole userRole;
+
 }
