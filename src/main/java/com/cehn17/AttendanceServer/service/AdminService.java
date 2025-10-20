@@ -21,7 +21,8 @@ public class AdminService {
     @Autowired
     private ProjectRepository projectRepository;
 
-    public UserDTO createser (UserDTO dto) {
+
+    public UserDTO createUser(UserDTO dto) {
         boolean exists = userRepository.findByEmail(dto.getEmail()).isPresent();
         if (exists) {
             throw new EntityExistsException("User already exists");
