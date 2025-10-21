@@ -3,6 +3,7 @@ package com.cehn17.AttendanceServer.service;
 import com.cehn17.AttendanceServer.dto.UserDTO;
 import com.cehn17.AttendanceServer.entities.Project;
 import com.cehn17.AttendanceServer.entities.User;
+import com.cehn17.AttendanceServer.enums.UserRole;
 import com.cehn17.AttendanceServer.repository.ProjectRepository;
 import com.cehn17.AttendanceServer.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
@@ -10,7 +11,9 @@ import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AdminService {
@@ -20,7 +23,6 @@ public class AdminService {
 
     @Autowired
     private ProjectRepository projectRepository;
-
 
     public UserDTO createUser(UserDTO dto) {
         boolean exists = userRepository.findByEmail(dto.getEmail()).isPresent();
@@ -40,6 +42,10 @@ public class AdminService {
         } else {
             throw new EntityNotFoundException("Project Not Found");
         }
+    }
 
+    public List<UserDTO> getAllManagers(){
+        List<User> users = userRepository.findAllByUserRole(UserRole.MANAGER);
+        return users.stream().map(User::getDto).collect(Collectors.toList());
     }
 }

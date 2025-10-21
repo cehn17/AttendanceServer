@@ -18,14 +18,23 @@ public class AdminController {
     private AdminService adminService;
 
     @PostMapping("/create-user")
-    public ResponseEntity<?> signupUser (@RequestBody UserDTO dto){
-        try{
+    public ResponseEntity<?> signupUser(@RequestBody UserDTO dto) {
+        try {
             UserDTO createdUser = adminService.createUser(dto);
-            return new ResponseEntity<> (createdUser, HttpStatus.OK);
-        } catch (EntityExistsException | EntityNotFoundException e){
+            return new ResponseEntity<>(createdUser, HttpStatus.OK);
+        } catch (EntityExistsException | EntityNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_ACCEPTABLE);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>("User not created, come again later", HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+
+    @GetMapping("/managers")
+    public ResponseEntity<?> getAllManagers() {
+        try {
+            return ResponseEntity.ok(adminService.getAllManagers());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 }
