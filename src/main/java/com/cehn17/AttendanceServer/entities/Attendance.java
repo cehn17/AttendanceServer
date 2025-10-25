@@ -31,7 +31,7 @@ public class Attendance {
     public AttendanceDTO getDto(){
         AttendanceDTO dto = new AttendanceDTO();
         dto.setId(id);
-        dto. setDate (date);
+        dto.setDate(date);
         dto.setAttendanceStatus(attendanceStatus) ;
         dto.setProjectId(project.getId());
         dto.setProjectName(project.getName());
