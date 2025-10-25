@@ -1,6 +1,7 @@
 package com.cehn17.AttendanceServer.controller;
 
 import com.cehn17.AttendanceServer.dto.AttendanceDTO;
+import com.cehn17.AttendanceServer.dto.LeaveRequestDTO;
 import com.cehn17.AttendanceServer.service.AttendanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +22,16 @@ public class AttendanceController {
             return ResponseEntity.ok(attendanceService.markAttendance(dto));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/add/leave")
+    public ResponseEntity<?> applyLeave(@RequestBody LeaveRequestDTO dto){
+        try {
+            return ResponseEntity.ok(attendanceService.applyLeave(dto));
+        }
+        catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

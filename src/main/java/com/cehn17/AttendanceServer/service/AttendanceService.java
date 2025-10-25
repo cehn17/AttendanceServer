@@ -1,16 +1,22 @@
 package com.cehn17.AttendanceServer.service;
 
 import com.cehn17.AttendanceServer.dto.AttendanceDTO;
+import com.cehn17.AttendanceServer.dto.LeaveRequestDTO;
 import com.cehn17.AttendanceServer.entities.Attendance;
+import com.cehn17.AttendanceServer.entities.LeaveRequest;
 import com.cehn17.AttendanceServer.entities.Project;
 import com.cehn17.AttendanceServer.entities.User;
+import com.cehn17.AttendanceServer.enums.UserRole;
 import com.cehn17.AttendanceServer.repository.AttendanceRepository;
+import com.cehn17.AttendanceServer.repository.LeaveRequestRepository;
 import com.cehn17.AttendanceServer.repository.ProjectRepository;
 import com.cehn17.AttendanceServer.repository.UserRepository;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -26,6 +32,9 @@ public class AttendanceService {
 
     @Autowired
     private ProjectRepository projectRepository;
+
+    @Autowired
+    private LeaveRequestRepository leaveRequestRepository;
 
     public AttendanceDTO markAttendance (AttendanceDTO dto){
 
@@ -53,6 +62,25 @@ public class AttendanceService {
         else{
             throw new EntityExistsException("Attendance Already Marked For Today");
         }
-
     }
+
+    public LeaveRequestDTO applyLeave(LeaveRequestDTO dto){
+        Optional<User> optionalEmployee = userRepository.findById(dto.getEmployeeId());
+        Optional<User> optionalManager = userRepository.findByProjectIdAndUserRole(dto.getProjectId(), UserRole.MANAGER);
+        Optional<Project> optionalProject = projectRepository.findById(dto.getProjectId());
+
+        if(optionalEmployee.isPresent() && optionalManager.isPresent() && optionalProject.isPresent()){
+            LeaveRequest leaveRequest = new LeaveRequest();
+            leaveRequest.setDate(LocalDate.now());
+            leaveRequest.setEmployee(optionalEmployee.get());
+            leaveRequest.setManager(optionalManager.get());
+            leaveRequest.setProject(optionalProject.get());
+            return leaveRequestRepository.save(leaveRequest).getDto();
+        }
+        else{
+            throw new EntityNotFoundException("Some Related Entity Not Found");
+        }
+    }
+
+
 }
