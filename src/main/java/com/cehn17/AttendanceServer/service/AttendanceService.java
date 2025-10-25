@@ -65,20 +65,29 @@ public class AttendanceService {
     }
 
     public LeaveRequestDTO applyLeave(LeaveRequestDTO dto){
-        Optional<User> optionalEmployee = userRepository.findById(dto.getEmployeeId());
-        Optional<User> optionalManager = userRepository.findByProjectIdAndUserRole(dto.getProjectId(), UserRole.MANAGER);
-        Optional<Project> optionalProject = projectRepository.findById(dto.getProjectId());
 
-        if(optionalEmployee.isPresent() && optionalManager.isPresent() && optionalProject.isPresent()){
-            LeaveRequest leaveRequest = new LeaveRequest();
-            leaveRequest.setDate(LocalDate.now());
-            leaveRequest.setEmployee(optionalEmployee.get());
-            leaveRequest.setManager(optionalManager.get());
-            leaveRequest.setProject(optionalProject.get());
-            return leaveRequestRepository.save(leaveRequest).getDto();
+        Optional<LeaveRequest> optionalLeaveRequest = leaveRequestRepository.findByEmployeeIdAndProjectIdAndDate (
+                dto. getEmployeeId(), dto.getProjectId(), LocalDate.now());
+
+        if(optionalLeaveRequest. isEmpty()){
+            Optional<User> optionalEmployee = userRepository.findById(dto.getEmployeeId());
+            Optional<User> optionalManager = userRepository.findByProjectIdAndUserRole(dto.getProjectId(), UserRole.MANAGER);
+            Optional<Project> optionalProject = projectRepository.findById(dto.getProjectId());
+
+            if(optionalEmployee.isPresent() && optionalManager.isPresent() && optionalProject.isPresent()){
+                LeaveRequest leaveRequest = new LeaveRequest();
+                leaveRequest.setDate(LocalDate.now());
+                leaveRequest.setEmployee(optionalEmployee.get());
+                leaveRequest.setManager(optionalManager.get());
+                leaveRequest.setProject(optionalProject.get());
+                return leaveRequestRepository.save(leaveRequest).getDto();
+            }
+            else{
+                throw new EntityNotFoundException("Some Related Entity Not Found");
+            }
         }
         else{
-            throw new EntityNotFoundException("Some Related Entity Not Found");
+            throw new EntityExistsException("Leave Already Applied For Today.");
         }
     }
 
